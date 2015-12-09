@@ -1,1 +1,1 @@
-from twitcher import twitcher
+from .api import twitcher
