@@ -1,2 +1,2 @@
 from setuptools import setup
-setup(name="twitchevents", version="0.1", packages=['twitchevents'],)
+setup(name="twitchevents", install_requires=['python-twitch'], version="0.1", packages=['twitchevents'],)
