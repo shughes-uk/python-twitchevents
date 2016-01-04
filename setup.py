@@ -1,2 +1,2 @@
 from setuptools import setup
-setup(name="twitcher", version="0.1", packages=['twitcher'],)
+setup(name="twitchevents", version="0.1", packages=['twitchevents'],)
