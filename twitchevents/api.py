@@ -7,12 +7,12 @@ import datetime
 from pprint import pformat
 
 
-class twitcher(object):
+class twitchevents(object):
 
     def __init__(self, name_list):
-        super(twitcher, self).__init__()
+        super(twitchevents, self).__init__()
         twitch_log.setLevel(logging.INFO)
-        self.logger = logging.getLogger("twitcher")
+        self.logger = logging.getLogger("twitchevents")
         self.thread = threading.Thread(target=self.run)
         self.follower_cache = {}
         self.running = False
