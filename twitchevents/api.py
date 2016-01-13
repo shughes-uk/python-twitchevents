@@ -1,10 +1,11 @@
+import datetime
+import logging
+import threading
+from pprint import pformat
+from time import sleep
+
 from twitch.api import v3 as twitch
 from twitch.logging import log as twitch_log
-import threading
-import logging
-from time import sleep
-import datetime
-from pprint import pformat
 
 
 class twitchevents(object):
