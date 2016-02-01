@@ -1,10 +1,11 @@
+import datetime
+import logging
+import threading
+from pprint import pformat
+from time import sleep
+
 from twitch.api import v3 as twitch
 from twitch.logging import log as twitch_log
-import threading
-import logging
-from time import sleep
-import datetime
-from pprint import pformat
 
 
 class twitchevents(object):
@@ -57,8 +58,13 @@ class twitchevents(object):
             while self.running:
                 if self.streaming_start_callbacks or self.streaming_stop_callbacks or self.viewers_change_callbacks:
                     if self.next_stream_check < datetime.datetime.now():
+                        result = None
                         for name in self.online_status:
-                            result = twitch.streams.by_channel(name).get("stream")
+                            try:
+                                result = twitch.streams.by_channel(name).get("stream")
+                            except:
+                                self.logger.exception("Error while grabbing stream for {0}".format(name))
+                                continue
                             self.check_streaming(name, result)
                             self.check_viewers(name, result)
                         self.next_stream_check = datetime.datetime.now() + datetime.timedelta(seconds=20)
@@ -84,7 +90,12 @@ class twitchevents(object):
 
     def check_followers(self):
         for streamer_name in self.online_status:
-            result = twitch.follows.by_channel(streamer_name, limit=100)
+            result = None
+            try:
+                result = twitch.follows.by_channel(streamer_name, limit=100)
+            except:
+                self.logger.exception("Error while getting followers for {0}".format(streamer_name))
+                continue
             latest_follows = {f['user']['display_name'] or f['user']['name'] for f in result['follows']}
             new_follows = latest_follows.difference(self.follower_cache[streamer_name])
             if new_follows:
@@ -94,7 +105,6 @@ class twitchevents(object):
 
     def check_viewers(self, name, result):
         if self.online_status[name]:
-            result = twitch.streams.by_channel(name).get("stream")
             if result:
                 if name in self.viewer_cache:
                     if self.viewer_cache[name] != result['viewers']:
