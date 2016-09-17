@@ -5,6 +5,7 @@ from pprint import pformat
 from time import sleep
 
 from twitch.api import v3 as twitch
+from twitch.exceptions import ResourceUnavailableException
 from twitch.logging import log as twitch_log
 
 
@@ -25,11 +26,15 @@ class twitchevents(object):
         self.viewer_cache = {}
         for name in name_list:
             self.online_status[name] = False
-            self.follower_cache[name] = {
-                f['user']['display_name'] or f['user']['name']
-                for f in twitch.follows.by_channel(
-                    name, limit=100)['follows']
-            }
+            try:
+                self.follower_cache[name] = {
+                    f['user']['display_name'] or f['user']['name']
+                    for f in twitch.follows.by_channel(
+                        name, limit=100)['follows']
+                }
+            except ResourceUnavailableException:
+                self.logger.warn("Twitch api unavailable during initializing")
+                self.follower_cache[name] = set()
 
     def subscribe_new_follow(self, callback):
         self.follower_callbacks.append(callback)
