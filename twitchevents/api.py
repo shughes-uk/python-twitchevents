@@ -27,8 +27,8 @@ class twitchevents(object):
             self.online_status[name] = False
             self.follower_cache[name] = {
                 f['user']['display_name'] or f['user']['name']
-                for f in twitch.follows.by_channel(name,
-                                                   limit=100)['follows']
+                for f in twitch.follows.by_channel(
+                    name, limit=100)['follows']
             }
 
     def subscribe_new_follow(self, callback):
